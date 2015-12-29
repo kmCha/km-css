@@ -1,0 +1,103 @@
+@import "variables.less";
+
+.km-container {
+  padding-right: 15px;
+  padding-left: 15px;
+  margin-right: auto;
+  margin-left: auto;
+}
+.km-row:before,
+.km-row:after {
+  display: table;
+  content: " ";
+}
+.km-row:after {
+	clear: both;
+}
+.km-row {
+  margin-right: -15px;
+  margin-left: -15px;
+}
+
+.km-responsive {
+  display: block;
+  max-width: 100%;
+  height: auto;
+}
+
+// 调用mixin输出css
+.initColumns(@numOfColumns);
+
+.makeColumns(@numOfColumns, xs);
+@media (min-width: @smWidth) {
+	.makeColumns(@numOfColumns, s);
+}
+@media (min-width: @mdWidth) {
+	.makeColumns(@numOfColumns, m);
+}
+@media (min-width: @lgWidth) {
+	.makeColumns(@numOfColumns, l);
+}
+
+
+// mixins
+
+// 设置所有列的共有规则
+.initColumns(@n) {
+	.wrapSelectors(@i: 1) {
+		@selecs: ~".km-xs-@{i}, .km-s-@{i}, .km-m-@{i}, .km-l-@{i}";
+		.wrapSelectors(@selecs, @i + 1);
+	}
+	.wrapSelectors(@item, @i) when (@i =< @n) {
+		@selecs: ~".km-xs-@{i}, .km-s-@{i}, .km-m-@{i}, .km-l-@{i}";
+		.wrapSelectors(~"@{item}, @{selecs}", @i + 1);
+	}
+	.wrapSelectors(@item, @i) when (@i > @n) {
+		@{item} {
+	    position: relative;
+		  min-height: 1px;
+		  padding-right: 15px;
+		  padding-left: 15px;
+		}
+	}
+  .wrapSelectors();
+}
+
+
+.makeColumns(@n ,@class) {
+
+	// 设置所有相同class的类的共同规则
+	.setAll(@i: 1) {
+		@selecs: ~".km-@{class}-@{i}";
+		.setAll(@selecs, @i + 1);
+	}
+	.setAll(@item, @i) when (@i =< @n) {
+		@selecs: ~".km-@{class}-@{i}";
+		.setAll(~"@{item}, @{selecs}", @i + 1);
+	}
+	.setAll(@item, @i) when (@i > @n) {
+		@{item} {
+			float: left;
+		}
+	}
+	.setAll();
+
+	// 设置对应class中每个不同大小列的宽度
+	.setEachWidth(@i: 1) when (@i =< @n) {
+		.km-@{class}-@{i} {
+			width: (@i * 100% / @n);
+	  }
+		.setEachWidth(@i + 1);
+	}
+	.setEachWidth();
+
+	// 设置对应class中每个不同大小的offset的左margin
+	.setEachOffset(@i: 0) when (@i =< @n) {
+		.km-@{class}-offset-@{i} {
+			margin-left: (@i * 100% / @n);
+	  }
+		.setEachOffset(@i + 1);
+	}
+	.setEachOffset();
+}
+
